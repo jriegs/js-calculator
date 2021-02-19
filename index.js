@@ -2,7 +2,7 @@
 
 // Add
 function add(num1, num2) {
-  return num1 + num2;
+  return +num1 + +num2;
 }
 
 // Subtract
@@ -20,6 +20,24 @@ function divide(num1, num2) {
   return num1 / num2;
 }
 
+// calculate two numbers
+function operate(num1, num2, operator) {
+  
+  let result;
+  if (operator === '+') {
+    result = add(num1,num2);
+  } else if (operator === '-') {
+    result = subtract(num1,num2);
+  } else if (operator === '*') {
+    result = multiply(num1,num2);
+  } else if (operator === '/') {
+    result = divide(num1,num2);
+  }
+
+  return result;
+
+}
+
 // Decimal Point Check
 function decimalCheck(value) {
   if (value.includes('.')) return;
@@ -28,8 +46,23 @@ function decimalCheck(value) {
   return decimalValue;
 }
 
-// calculate result
-function calculate() {
+// input a number
+function clickNum(e) {
+
+}
+
+// input a decimal point
+function clickDecimalPoint(e) {
+
+}
+
+// input operator symbol
+function clickOperator(e) {
+
+}
+
+// carry out calculations
+function calculate(num1, num2, operator) {
   console.log('calculate');
 }
 
