@@ -1,0 +1,88 @@
+*,
+*::after,
+*::before {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+h1 {
+  margin: 20px 10px;
+  text-align: center;
+  flex-basis: 100%;
+}
+
+.calculator {
+  display: inline-block;
+  background: gray;
+  max-width: 320px;
+  padding: 15px;
+}
+
+.calculator__screen {
+  background: lightblue;
+  margin-bottom: 20px;
+  padding: 10px;
+  text-align: right;
+}
+
+.calculator__btns {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.calculator__btn {
+  border: 1px solid black;
+  cursor: pointer;
+  padding: 10px;
+  text-align: center;
+  flex-basis: 25%;
+}
+
+.order-1 {
+  order: 1;
+}
+
+.order-4 {
+  order: 4;
+}
+
+.order-5 {
+  order: 5;
+}
+
+.order-8 {
+  order: 8;
+}
+
+.order-9 {
+  order: 9;
+}
+
+.order-10 {
+  order: 10;
+}
+
+.order-11 {
+  order: 11;
+}
+
+.order-12 {
+  order: 12;
+}
