@@ -82,8 +82,6 @@ function clickedDecimalPoint(calcDisplay) {
     let displayContent = calcDisplay.textContent;
     const numbers = displayContent.split(existingOperator);
 
-    console.log(numbers, numbers.length);
-
     // check if more than one number
     if (numbers[1]) {
       // assign numbers to variables
@@ -120,6 +118,30 @@ function clickedNum(numValue, calcDisplay) {
   }
 }
 
+// get numbers and operator, and solve the resulting equation
+function getEquationValues(calcDisplay) {
+  let equationValues = '';
+
+  // check that calcDisplay contains an equation that can be calculated
+  // start by checking if an operator exists
+  if (operatorCheck(calcDisplay)) {
+    equationValues = {
+      operator: operatorCheck(calcDisplay)
+    };
+
+    // gcreate array of numbers being displayed on calculator screen
+    const numbers = calcDisplay.textContent.split(equationValues.operator);
+
+    // check that array numbers have values 
+    if (numbers[0] && numbers[1]) {
+      equationValues.num1 = numbers[0];
+      equationValues.num2 = numbers[1];
+    }
+  }
+
+  return equationValues;
+}
+
 function clickedOperator(clickedOperator, calcDisplay) {
   // add clicked operator to display screen, if it wasn't the equal button that was clicked
   if (clickedOperator !== '=') {
@@ -127,10 +149,25 @@ function clickedOperator(clickedOperator, calcDisplay) {
     if (calcDisplay.textContent[calcDisplay.textContent.length - 1] === '.') return; 
 
     // make sure display contains a value and an operator doesn't exist already
-      if (calcDisplay.textContent && !isNaN(calcDisplay.textContent) ) {
-        calcDisplay.textContent += clickedOperator;
-        return;
+    if (calcDisplay.textContent && !isNaN(calcDisplay.textContent) ) {
+      calcDisplay.textContent += clickedOperator;
+      return;
+    } else {
+      // check if an operator exists already and it's followed by another number
+      if (getEquationValues(calcDisplay)) {
+        const calcInfo = getEquationValues(calcDisplay);
+        // solve if operator and two numbers exist, then add clicked operator to display
+        if (calcInfo.num1 && calcInfo.num2 && calcInfo.operator) {
+          calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator) + clickedOperator;
+        }
       }
+    }
+  } else {
+    // solve if equal button was clicked, and equation values exist
+    if (getEquationValues(calcDisplay)) {
+      const calcInfo = getEquationValues(calcDisplay);
+      calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator);
+    }
   }
 }
 
