@@ -37,8 +37,10 @@ h1 {
 
 .calculator__screen {
   background: lightblue;
+  height: 40px;
   margin-bottom: 20px;
   padding: 10px;
+  overflow: hidden;
   text-align: right;
 }
 
@@ -53,6 +55,10 @@ h1 {
   padding: 10px;
   text-align: center;
   flex-basis: 25%;
+}
+
+.calculator__btn--clear {
+  flex-basis: 75%;
 }
 
 .order-1 {
@@ -85,4 +91,8 @@ h1 {
 
 .order-12 {
   order: 12;
+}
+
+.order-18 {
+  order: 18;
 }
