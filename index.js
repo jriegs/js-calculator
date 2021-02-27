@@ -17,6 +17,8 @@ function multiply(num1, num2) {
 
 // Divide
 function divide(num1, num2) {
+  // can't divide by zero
+  if (num2 == 0) return;
   return num1 / num2;
 }
 
@@ -166,7 +168,10 @@ function clickedOperator(clickedOperator, calcDisplay) {
     // solve if equal button was clicked, and equation values exist
     if (getEquationValues(calcDisplay)) {
       const calcInfo = getEquationValues(calcDisplay);
-      calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator);
+      // solve if operator and two numbers exist
+      if (calcInfo.num1 && calcInfo.num2 && calcInfo.operator) {
+        calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator);
+      }
     }
   }
 }
