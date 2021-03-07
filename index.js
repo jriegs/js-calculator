@@ -2,7 +2,7 @@
 
 // Add
 function add(num1, num2) {
-  return +num1 + +num2;
+  return Number(num1) + Number(num2);
 }
 
 // Subtract
@@ -18,14 +18,35 @@ function multiply(num1, num2) {
 // Divide
 function divide(num1, num2) {
   // can't divide by zero
-  if (num2 == 0) return;
+  if (num2 == 0) return num1 + '/' + num2;
+
   return num1 / num2;
+}
+
+// to round or not to round...
+function roundingCheck(number) {
+  let roundedNumber = number;
+
+  // check if number has a decimal value
+  if (number % 1 !== 0) {
+    // get whole number and decimal place values
+    const decimalPlaceValue = number % 1;
+    const wholeNumber = number - decimalPlaceValue;
+    
+    // check if places after decimal point extend past 5
+    if (decimalPlaceValue.toString().length > 5) {
+      // check if whole number is 0 (formatting reason), round to nearest 100th
+      roundedNumber = wholeNumber === 0 ? decimalPlaceValue.toFixed(2) : wholeNumber + decimalPlaceValue.toFixed(2);
+    }
+  }
+
+  return roundedNumber;
 }
 
 // calculate equation
 function operate(num1, num2, operator) {
-  
   let result;
+
   if (operator === '+') {
     result = add(num1,num2);
   } else if (operator === '-') {
@@ -36,8 +57,8 @@ function operate(num1, num2, operator) {
     result = divide(num1,num2);
   }
 
-  return result;
-
+  // return number and round if needed
+  return roundingCheck(result);
 }
 
 // check calculator display screen value
@@ -51,19 +72,51 @@ function checkCalcDisplayVal(display) {
   return true;
 }
 
-function operatorCheck(currentDisplay) {
-  const operators = ['+', '-', '*', '/'];
-  let operator = '';
+function loopOperatorsCheck(value) {
+  const operators = ['-', '+', '*', '/'];
+  const existingOperators = [];
 
   // loop through operators
   for (let i = 0; i < operators.length; i++) {
-    // and check if display includes one
-    if (currentDisplay.textContent.includes(operators[i])) {
-      operator = operators[i];
+    // return existing operator
+    if (value.includes(operators[i])) {
+      existingOperators.push(operators[i]);
     }
   }
 
-  return operator;
+  console.log(existingOperators);
+
+  return existingOperators;
+}
+
+function operatorCheck(currentDisplay) {
+  let operators;
+
+  // loop through operators
+  operators = [...loopOperatorsCheck(currentDisplay.textContent)];
+
+  console.log(operators);
+
+  // no operators found
+  if (operators.length === 0) return
+
+  if (operators.length === 1) {
+    return operators[0];
+  } else {
+    // more than one operator found
+    if (operators.length === 2) { // one negative number
+      // check if first number is negative
+      if (currentDisplay.textContent[0] === '-') {
+        return operators[1];
+      } else {
+        return operators[0];
+      }
+    } else { // both numbers are negative
+      return operators[1];
+    }
+  }
+
+  
 }
 
 // check for decimal point
@@ -176,6 +229,12 @@ function clickedOperator(clickedOperator, calcDisplay) {
   }
 }
 
+function clickedTypeConversion(calcDisplay) {
+  console.log('this will change the sign type');
+
+  
+}
+
 function removeLastChar(calcDisplay) {
   const currentValue = calcDisplay.textContent;
   const newValue = currentValue.substr(0, currentValue.length - 1);
@@ -193,6 +252,8 @@ function getBtnType(btnValue) {
     return 'OPERATOR';
   } else if (btnValue === '.') {
     return 'DECIMAL';
+  } else if (btnValue === '+/-') {
+    return 'POS/NEG'
   } else if (btnValue.toLowerCase() === 'del') {
     return 'DELETE';
   } else if (btnValue.toLowerCase() === 'clear') {
@@ -208,23 +269,24 @@ function useCalculator(e) {
   const btnType = getBtnType(clickedBtn);
 
   // check button type &&
-  // carry out clicked button event (clicked number, clicked operator/equal, clicked decimal, or clicked delete/clear )
+  // carry out clicked button event
   if (btnType === 'NUMBER') {
     clickedNum(clickedBtn, calcDisplay);
   } else if (btnType === 'DECIMAL') {
     clickedDecimalPoint(calcDisplay);
   } else if (btnType === 'OPERATOR') {
     clickedOperator(clickedBtn, calcDisplay);
+  } else if (btnType === 'POS/NEG') {
+    clickedTypeConversion(calcDisplay);
   } else if (btnType === 'DELETE') {
     removeLastChar(calcDisplay);
   } else if (btnType === 'CLEAR') {
     clearCalcDisplay(calcDisplay);
   }
-
 }
 
 
-/* GLOBAL */
+/* GLOBAL SCOPE */
 const calcBtns = document.querySelector('.js-buttons');
 
 calcBtns.addEventListener('click', useCalculator);

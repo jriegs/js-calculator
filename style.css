@@ -58,7 +58,7 @@ h1 {
 }
 
 .calculator__btn--clear {
-  flex-basis: 75%;
+  flex-basis: 50%;
 }
 
 .order-1 {
