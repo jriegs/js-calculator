@@ -26,17 +26,30 @@ function divide(num1, num2) {
 // to round or not to round...
 function roundingCheck(number) {
   let roundedNumber = number;
+  const numberString = number.toString();
 
-  // check if number has a decimal value
-  if (number % 1 !== 0) {
+  if (number % 1 !== 0) { // number has decimal value
+
     // get whole number and decimal place values
-    const decimalPlaceValue = number % 1;
-    const wholeNumber = number - decimalPlaceValue;
+    let wholeNumber = Number(numberString.split('.')[0]);
+    let decimalPlaceValue = Number(numberString.split('.')[1]);
+
+    // check if decimal point is in first position
+    if (numberString[0] === '.') {
+      wholeNumber = 0;
+      decimalPlaceValue = Number(numberString.substring(1)); // remove decimal point
+    }
     
-    // check if places after decimal point extend past 5
-    if (decimalPlaceValue.toString().length > 5) {
+    // run through rounding check
+    if (decimalPlaceValue.toString().length > 4) {
       // check if whole number is 0 (formatting reason), round to nearest 100th
-      roundedNumber = wholeNumber === 0 ? decimalPlaceValue.toFixed(2) : wholeNumber + decimalPlaceValue.toFixed(2);
+      if (wholeNumber === 0) {
+        roundedNumber = roundedNumber.toFixed(2);
+      } else {
+        // round decimal place, then get rounded result
+        decimalPlaceValue = '.' + decimalPlaceValue.toFixed(2);
+        roundedNumber = Number(wholeNumber) + Number(decimalPlaceValue);
+      }
     }
   }
 
@@ -46,6 +59,8 @@ function roundingCheck(number) {
 // calculate equation
 function operate(num1, num2, operator) {
   let result;
+
+  console.log('operate function number check: ', num1, num2);
 
   if (operator === '+') {
     result = add(num1,num2);
@@ -84,8 +99,6 @@ function loopOperatorsCheck(value) {
     }
   }
 
-  console.log(existingOperators);
-
   return existingOperators;
 }
 
@@ -95,7 +108,7 @@ function operatorCheck(currentDisplay) {
   // loop through operators
   operators = [...loopOperatorsCheck(currentDisplay.textContent)];
 
-  console.log(operators);
+  // console.log(operators);
 
   // no operators found
   if (operators.length === 0) return
@@ -198,10 +211,13 @@ function getEquationValues(calcDisplay) {
 }
 
 function clickedOperator(clickedOperator, calcDisplay) {
+  const lastChar = calcDisplay.textContent[calcDisplay.textContent.length - 1];
+
+  // if last character is decimal point, do nothing
+  if (lastChar === '.') return; 
+
   // add clicked operator to display screen, if it wasn't the equal button that was clicked
   if (clickedOperator !== '=') {
-    // if a decimal point is the last character displayed, don't add operator
-    if (calcDisplay.textContent[calcDisplay.textContent.length - 1] === '.') return; 
 
     // make sure display contains a value and an operator doesn't exist already
     if (calcDisplay.textContent && !isNaN(calcDisplay.textContent) ) {
@@ -217,8 +233,9 @@ function clickedOperator(clickedOperator, calcDisplay) {
         }
       }
     }
-  } else {
-    // solve if equal button was clicked, and equation values exist
+  } else { // equal button was clicked
+
+    // check equation values
     if (getEquationValues(calcDisplay)) {
       const calcInfo = getEquationValues(calcDisplay);
       // solve if operator and two numbers exist
@@ -232,7 +249,6 @@ function clickedOperator(clickedOperator, calcDisplay) {
 function clickedTypeConversion(calcDisplay) {
   console.log('this will change the sign type');
 
-  
 }
 
 function removeLastChar(calcDisplay) {
