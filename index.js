@@ -39,7 +39,7 @@ function roundingCheck(number) {
       wholeNumber = 0;
       decimalPlaceValue = Number(numberString.substring(1)); // remove decimal point
     }
-    
+
     // run through rounding check
     if (decimalPlaceValue.toString().length > 4) {
       // check if whole number is 0 (formatting reason), round to nearest 100th
@@ -47,7 +47,7 @@ function roundingCheck(number) {
         roundedNumber = roundedNumber.toFixed(2);
       } else {
         // round decimal place, then get rounded result
-        decimalPlaceValue = '.' + decimalPlaceValue.toFixed(2);
+        decimalPlaceValue = Number('.' + decimalPlaceValue).toFixed(2);
         roundedNumber = Number(wholeNumber) + Number(decimalPlaceValue);
       }
     }
@@ -59,8 +59,6 @@ function roundingCheck(number) {
 // calculate equation
 function operate(num1, num2, operator) {
   let result;
-
-  console.log('operate function number check: ', num1, num2);
 
   if (operator === '+') {
     result = add(num1,num2);
@@ -88,13 +86,19 @@ function checkCalcDisplayVal(display) {
 }
 
 function loopOperatorsCheck(value) {
-  const operators = ['-', '+', '*', '/'];
+  let equation = value;
+
+  // if first number is negative, remove sign
+  if (value[0] === '-') {
+    equation = value.substring(1);
+  }
+  const operators = ['/', '*', '+', '-'];
   const existingOperators = [];
 
   // loop through operators
   for (let i = 0; i < operators.length; i++) {
     // return existing operator
-    if (value.includes(operators[i])) {
+    if (equation.includes(operators[i])) {
       existingOperators.push(operators[i]);
     }
   }
@@ -108,28 +112,10 @@ function operatorCheck(currentDisplay) {
   // loop through operators
   operators = [...loopOperatorsCheck(currentDisplay.textContent)];
 
-  // console.log(operators);
-
   // no operators found
   if (operators.length === 0) return
 
-  if (operators.length === 1) {
-    return operators[0];
-  } else {
-    // more than one operator found
-    if (operators.length === 2) { // one negative number
-      // check if first number is negative
-      if (currentDisplay.textContent[0] === '-') {
-        return operators[1];
-      } else {
-        return operators[0];
-      }
-    } else { // both numbers are negative
-      return operators[1];
-    }
-  }
-
-  
+  return operators[0];
 }
 
 // check for decimal point
@@ -197,13 +183,21 @@ function getEquationValues(calcDisplay) {
       operator: operatorCheck(calcDisplay)
     };
 
-    // gcreate array of numbers being displayed on calculator screen
+    // create array of numbers being displayed on calculator screen
     const numbers = calcDisplay.textContent.split(equationValues.operator);
 
     // check that array numbers have values 
     if (numbers[0] && numbers[1]) {
       equationValues.num1 = numbers[0];
       equationValues.num2 = numbers[1];
+    } else if (numbers[1] && numbers[2]) { 
+      // applies when subtracting from a negative value
+      equationValues.num1 = numbers[1] * -1;
+      equationValues.num2 = numbers[2];
+    } else {
+      // applies when subtracting negative values
+      equationValues.num1 = numbers[0];
+      equationValues.num2 = numbers[2] * -1;
     }
   }
 
@@ -227,6 +221,7 @@ function clickedOperator(clickedOperator, calcDisplay) {
       // check if an operator exists already and it's followed by another number
       if (getEquationValues(calcDisplay)) {
         const calcInfo = getEquationValues(calcDisplay);
+
         // solve if operator and two numbers exist, then add clicked operator to display
         if (calcInfo.num1 && calcInfo.num2 && calcInfo.operator) {
           calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator) + clickedOperator;
@@ -238,6 +233,7 @@ function clickedOperator(clickedOperator, calcDisplay) {
     // check equation values
     if (getEquationValues(calcDisplay)) {
       const calcInfo = getEquationValues(calcDisplay);
+
       // solve if operator and two numbers exist
       if (calcInfo.num1 && calcInfo.num2 && calcInfo.operator) {
         calcDisplay.textContent = operate(calcInfo.num1, calcInfo.num2, calcInfo.operator);
@@ -246,9 +242,73 @@ function clickedOperator(clickedOperator, calcDisplay) {
   }
 }
 
-function clickedTypeConversion(calcDisplay) {
-  console.log('this will change the sign type');
+function getOperators(calcDisplay) {
+  const operators = ['+', '-', '*', '/'];
+  let operatorValues = []
 
+  for (let h = 0; h < operators.length; h++) {
+    for (let i = 0; i < calcDisplay.textContent.length; i++) {
+      if (calcDisplay.textContent[i] === operators[h]) {
+        operatorValues.push(operators[h]);
+      }
+    }
+  }
+
+  return operatorValues;
+}
+
+function clickedTypeConversion(calcDisplay) {
+  const calcContent = calcDisplay.textContent;
+  const operatorsFound = getOperators(calcDisplay);
+  
+  // exit function if calc content isn't a number value that's not 0
+  if (
+    calcContent === '' || 
+    calcContent === 0 || 
+    calcContent[calcContent.length - 1] === '.') return;
+
+  // check if just a number value exists
+  if (!isNaN(calcContent)) {
+    // convert number to positive or negative
+    calcDisplay.textContent = calcContent * -1;
+  } else {
+    // if calc content contains an operator check to see a number follows and convert it
+
+    const operator = operatorCheck(calcDisplay);
+    const equationValues = calcContent.split(operator);
+    let lastValue = equationValues[equationValues.length - 1];
+
+    // check that lastValue exists
+    if (!lastValue) return;
+
+    // check if first value sign type is minus 
+    if (calcDisplay.textContent[0] === '-') { // first value is negative
+
+      // if 2+ operators are found
+      if (operatorsFound.length >= 2 ) {
+        // convert last value to negative
+        lastValue *= -1;
+      }
+
+      // first value needs to remain negative
+      if (equationValues[1] > 0) {
+        equationValues[1] *= -1;
+      }
+
+      calcDisplay.textContent = equationValues[1] + operator + lastValue;
+
+    } else { // first value is positive
+
+      // check for operators, ignore if two minus signs found 
+      if (operatorsFound.length >= 1 && (operatorsFound[0] + operatorsFound[1] !== '--')) {
+        // convert to negative
+        lastValue *= -1;
+      }
+      
+      calcDisplay.textContent = equationValues[0] + operator + lastValue;
+    }
+    
+  }
 }
 
 function removeLastChar(calcDisplay) {
