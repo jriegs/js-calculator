@@ -6,3 +6,4 @@ A javascript calculator that carries out basic functionalities, such as:
 - subtraction
 - multiplication
 - dividation
+- sign type conversion
